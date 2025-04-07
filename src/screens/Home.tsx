@@ -76,7 +76,7 @@ const Home = ({navigation}: any) => {
   );
 
   return (
-    <View>
+    <View style={{flex:1}}>
       {loading ? (
         <LottieView
           

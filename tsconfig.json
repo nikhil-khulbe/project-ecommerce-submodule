@@ -1,7 +1,7 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-native", // Required for React Native JSX
-    // ...other options
+    "jsx": "react-native", 
+     "esModuleInterop": true,
   }
 }

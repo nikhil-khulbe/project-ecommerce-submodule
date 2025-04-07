@@ -8,6 +8,7 @@ import {
   Login,
   Profile,
   Setting,
+  SignUp,
 } from '../screens';
 import {Product} from '../screens/Home';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -21,7 +22,8 @@ export type RootStackParamList = {
   Details: {product: Product};
   Profile: undefined;
   Setting: undefined;
-  MainTabs:undefined
+  MainTabs: undefined;
+  SignUp: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,7 +31,18 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function MyStack() {
   return (
     <>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="SignUp">
+        
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{headerShown: false}}
+        />
         <Stack.Screen
           name="Home"
           component={Home}
@@ -43,10 +56,12 @@ export function MyStack() {
           }}
         />
         {/* <Stack.Screen name="Cart" component={Cart} />*/}
-        
-        <Stack.Screen name="MainTabs" component={TabNavigator} options={{ headerShown: false }} /> 
+        <Stack.Screen
+          name="MainTabs"
+          component={TabNavigator}
+          options={{headerShown: false}}
+        />
         <Stack.Screen name="Details" component={Details} />
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </>
   );

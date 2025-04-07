@@ -5,44 +5,77 @@ import {
   Button,
   TextInput,
   StyleSheet,
+  Alert,
 } from 'react-native';
-import React, {useContext} from 'react';
+import React from 'react'; // Default import
+import {useContext} from 'react';
 import TabNavigator from '../Navigator/TabNavigator';
 import {Theme, ThemeContext} from '../Context/ThemeContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { LangaugeContext, Language } from '../Context/LanguageContext';
-
-
-
-
-
+import {LangaugeContext, Language} from '../Context/LanguageContext';
+import * as yup from 'yup';
+import {Controller, useForm} from 'react-hook-form';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from '@react-native-firebase/auth';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {FormData} from './SignUp';
 
 const Login = ({navigation}: any) => {
+  const {control, handleSubmit} = useForm<FormData>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
   const {theme, toggleTheme} = useContext<Theme>(ThemeContext);
   const {language, changeLanguage} = useContext<Language>(LangaugeContext);
   const color = {
     background: theme ? 'white' : 'black',
-    text: theme ? 'black' : 'white',
+    text: theme ? 'white' : 'black',
     input: theme ? 'grey' : 'white',
   };
-  const translation= {
+  const translation = {
     english: {
       login: 'Login',
-      username: 'Username',
+      email: 'Email',
       password: 'Password',
       button: 'Login',
     },
     spanish: {
       login: 'Acceso',
-      username: 'Usuario',
+      email: 'Correo electrónico',
       password: 'Contraseña',
       button: 'Iniciar Sesión',
     },
   };
+  async function onSubmit(data: FormData) {
+    console.log(data);
+    const auth = getAuth();
+    try {
+      await signInWithEmailAndPassword(auth, data.email.trim(), data.password.trim());
+      console.log(signInWithEmailAndPassword(auth, data.email, data.password))
+      Alert.alert('Logged in Successfully');
+      
+      navigation.navigate('MainTabs');
+    } catch (error: any) {
+      console.log(error);
+      Alert.alert(error.nativeErrorMessage,'Invalid user and password');
+    }
+  }
   return (
     <>
       <View>
-        <Button title={language === 'english' ? 'Switch to Spanish' : 'Cambiar a Inglés'} onPress={()=>changeLanguage(language === 'english' ? 'spanish' : 'english')}/>
+        <Button
+          title={
+            language === 'english' ? 'Switch to Spanish' : 'Cambiar a Inglés'
+          }
+          onPress={() =>
+            changeLanguage(language === 'english' ? 'spanish' : 'english')
+          }
+        />
         <Pressable
           onPress={() => toggleTheme()}
           style={{backgroundColor: color.background}}>
@@ -73,25 +106,47 @@ const Login = ({navigation}: any) => {
                 : 'rgba(0,255,255,0.5)',
             },
           ]}>
-          <Text style={{fontSize: 30, color: color.text}}>{translation[language].login}</Text>
-          <TextInput
-            placeholder={translation[language].username}
-            style={[
-              {backgroundColor: color.input, color: color.text},
-              styles.loginInput,
-            ]}
+          <Text style={{fontSize: 30, color: theme?'black':'white'}}>
+            {translation[language].login}
+          </Text>
+          <Controller
+            control={control}
+            name="email"
+            render={({field: {value, onChange}}) => (
+              <TextInput
+                placeholder={translation[language].email}
+                style={[
+                  {backgroundColor: color.input, color: color.text},
+                  styles.loginInput,
+                ]}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
           />
-          <TextInput
-            placeholder={translation[language].password}
-            style={[
-              {backgroundColor: color.input, color: color.text},
-              styles.loginInput,
-            ]}
+
+          <Controller
+            control={control}
+            name="password"
+            render={({field: {value, onChange}}) => (
+              <TextInput
+                placeholder={translation[language].password}
+                style={[
+                  {backgroundColor: color.input, color: color.text},
+                  styles.loginInput,
+                ]}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
           />
-          <Button
-            title={translation[language].login}
-            onPress={() => navigation.navigate('MainTabs')}
-          />
+
+          <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+          <Pressable onPress={() => navigation.navigate('SignUp')}>
+            <Text style={{color: theme?'blue':'white'}}>
+              Don't have an account? Sign Up in here
+            </Text>
+          </Pressable>
         </View>
       </View>
     </>
