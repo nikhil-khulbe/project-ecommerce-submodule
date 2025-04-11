@@ -15,6 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {LangaugeContext, Language} from '../Context/LanguageContext';
 import * as yup from 'yup';
 import {Controller, useForm} from 'react-hook-form';
+import * as Keychain from 'react-native-keychain';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -22,8 +23,10 @@ import {
 } from '@react-native-firebase/auth';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {FormData} from './SignUp';
+import {useTokenAuthStore} from '../Store/TokenAuthStore';
 
 const Login = ({navigation}: any) => {
+  const {LoggedIn, setLoggedIn} = useTokenAuthStore();
   const {control, handleSubmit} = useForm<FormData>({
     defaultValues: {
       email: '',
@@ -55,14 +58,46 @@ const Login = ({navigation}: any) => {
     console.log(data);
     const auth = getAuth();
     try {
-      await signInWithEmailAndPassword(auth, data.email.trim(), data.password.trim());
-      console.log(signInWithEmailAndPassword(auth, data.email, data.password))
+      await signInWithEmailAndPassword(
+        auth,
+        data.email.trim(),
+        data.password.trim(),
+      );
+      console.log(signInWithEmailAndPassword(auth, data.email, data.password));
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const token = await currentUser.getIdToken(true);
+        await Keychain.setGenericPassword('auth', token, {
+          service: 'ProjectECommerce_auth',
+        });
+        setLoggedIn(true)
+        console.log(token, 'TOken',LoggedIn,'state for log');
+      }
+      // const credential = await Keychain.getGenericPassword({ service: 'ProjectECommerce_auth' })
+      // console.log(credential,'CREDENTIAL')
+      // const checkToken = async () => {
+      //   const credential = await Keychain.getGenericPassword({
+      //     service: 'ProjectECommerce_auth',
+      //   });
+      //   if (credential.password && credential.password.length > 0) {
+      //     setLoogedIn(true);
+      //   } else {
+      //     setLoogedIn(false);
+      //   }
+      // };
+      // checkToken();
       Alert.alert('Logged in Successfully');
-      
       navigation.navigate('MainTabs');
+      
+
+      // if (credential.password && credential.password.length > 0) {
+
+      // } else {
+      //   console.log('Somwhting wrong with credential')
+      // }
     } catch (error: any) {
       console.log(error);
-      Alert.alert(error.nativeErrorMessage,'Invalid user and password');
+      Alert.alert(error.nativeErrorMessage, 'Invalid user and password');
     }
   }
   return (
@@ -106,7 +141,7 @@ const Login = ({navigation}: any) => {
                 : 'rgba(0,255,255,0.5)',
             },
           ]}>
-          <Text style={{fontSize: 30, color: theme?'black':'white'}}>
+          <Text style={{fontSize: 30, color: theme ? 'black' : 'white'}}>
             {translation[language].login}
           </Text>
           <Controller
@@ -143,7 +178,7 @@ const Login = ({navigation}: any) => {
 
           <Button title="Submit" onPress={handleSubmit(onSubmit)} />
           <Pressable onPress={() => navigation.navigate('SignUp')}>
-            <Text style={{color: theme?'blue':'white'}}>
+            <Text style={{color: theme ? 'blue' : 'white'}}>
               Don't have an account? Sign Up in here
             </Text>
           </Pressable>

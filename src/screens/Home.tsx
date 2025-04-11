@@ -7,10 +7,15 @@ import {
   RootTagContext,
   StyleSheet,
   ActivityIndicator,
+  Button,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
+import * as Keychain from 'react-native-keychain';
+import {useTokenAuthStore} from '../Store/TokenAuthStore';
+import SignUp from './SignUp';
+import { getAuth } from '@react-native-firebase/auth';
 export interface Dimensions {
   width: number;
   height: number;
@@ -32,10 +37,11 @@ export interface Product {
 // type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const Home = ({navigation}: any) => {
+  const {LoggedIn, setLoggedIn} = useTokenAuthStore();
   // const navigation = useNavigation()
   const [loading, setLoading] = useState<boolean>(true);
   const [products, setProducts] = useState<Product[]>([]);
-  console.log("testing",require('../../loading.json'))
+  // console.log('testing', require('../../loading.json'));
 
   const fetchProductApi = async () => {
     try {
@@ -53,9 +59,9 @@ const Home = ({navigation}: any) => {
     fetchProductApi();
   }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" />;
-  }
+  // if (loading) {
+  //   return <ActivityIndicator size="large" />;
+  // }
 
   const renderItem = ({item}: {item: Product}) => (
     <Pressable onPress={() => navigation.navigate('Details', {product: item})}>
@@ -75,24 +81,36 @@ const Home = ({navigation}: any) => {
     </Pressable>
   );
 
+  async function handleLogOut() {
+    console.log(LoggedIn);
+    await Keychain.resetGenericPassword({ service: 'ProjectECommerce_auth' });
+    const auth = getAuth()
+    auth.signOut()
+    setLoggedIn(false);
+    // navigation.navigate('SignUp');
+  }
   return (
-    <View style={{flex:1}}>
+    <View style={{flex: 1}}>
       {loading ? (
-        <LottieView
-          
-          source={require('../../loading.json')} 
-          autoPlay
-          loop
-          style={styles.animation}
-          onAnimationFailure={(error)=>console.log(error,'animation Error')}
-        />
+        <View style={styles.animationCtn}>
+          <LottieView
+            source={require('../../loading.json')}
+            autoPlay
+            loop
+            style={styles.animation}
+            onAnimationFailure={error => console.log(error, 'animation Error')}
+          />
+        </View>
       ) : (
-        <FlatList
-          renderItem={renderItem}
-          initialNumToRender={7}
-          keyExtractor={(item: Product) => item.id.toString()}
-          data={products}
-        />
+        <View>
+          <Button title="Log Out" onPress={() => handleLogOut()} />
+          <FlatList
+            renderItem={renderItem}
+            initialNumToRender={7}
+            keyExtractor={(item: Product) => item.id.toString()}
+            data={products}
+          />
+        </View>
       )}
     </View>
   );
@@ -112,8 +130,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   animation: {
-    width: 200,
-    height: 200,
-    backgroundColor:'red'
+    width: 100,
+    height: 100,
+  },
+  animationCtn: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

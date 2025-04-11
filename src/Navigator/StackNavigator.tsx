@@ -13,6 +13,7 @@ import {
 import {Product} from '../screens/Home';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import TabNavigator from './TabNavigator';
+import {useTokenAuthStore} from '../Store/TokenAuthStore';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -29,21 +30,45 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function MyStack() {
+  const {LoggedIn, setLoggedIn} = useTokenAuthStore();
   return (
     <>
-      <Stack.Navigator initialRouteName="SignUp">
-        
+      <Stack.Navigator initialRouteName={LoggedIn ? 'MainTabs' : 'SignUp'}>
         <Stack.Screen
           name="SignUp"
           component={SignUp}
           options={{headerShown: false}}
         />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
+       
+         
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{headerShown: false}}
+          />
+        
+        {LoggedIn && (
+          <Stack.Screen
+            name="MainTabs"
+            component={TabNavigator}
+            options={{headerShown: false}}
+          />
+        )}
+
+        {/* {LoggedIn ? (
+          <Stack.Screen
+            name="MainTabs"
+            component={TabNavigator}
+            options={{headerShown: false}}
+          />
+        ) : (
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{headerShown: false}}
+          />
+        )} */}
+        {/* <Stack.Screen
           name="Home"
           component={Home}
           options={{
@@ -54,13 +79,8 @@ export function MyStack() {
               backgroundColor: 'rgba(232, 86, 78,0.2)',
             },
           }}
-        />
+        /> */}
         {/* <Stack.Screen name="Cart" component={Cart} />*/}
-        <Stack.Screen
-          name="MainTabs"
-          component={TabNavigator}
-          options={{headerShown: false}}
-        />
         <Stack.Screen name="Details" component={Details} />
       </Stack.Navigator>
     </>
