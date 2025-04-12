@@ -87,7 +87,7 @@ const Login = ({navigation}: any) => {
       // };
       // checkToken();
       Alert.alert('Logged in Successfully');
-      navigation.navigate('MainTabs');
+      // navigation.navigate('MainTabs');
       
 
       // if (credential.password && credential.password.length > 0) {

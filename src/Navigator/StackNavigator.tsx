@@ -34,25 +34,25 @@ export function MyStack() {
   return (
     <>
       <Stack.Navigator initialRouteName={LoggedIn ? 'MainTabs' : 'SignUp'}>
-        <Stack.Screen
-          name="SignUp"
-          component={SignUp}
-          options={{headerShown: false}}
-        />
-       
-         
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{headerShown: false}}
-          />
-        
-        {LoggedIn && (
+        {LoggedIn ? (
           <Stack.Screen
             name="MainTabs"
             component={TabNavigator}
             options={{headerShown: false}}
           />
+        ) : (
+          <>
+            <Stack.Screen
+              name="SignUp"
+              component={SignUp}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{headerShown: false}}
+            />
+          </>
         )}
 
         {/* {LoggedIn ? (
