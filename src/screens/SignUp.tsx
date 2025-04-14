@@ -7,7 +7,7 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Theme, ThemeContext} from '../Context/ThemeContext';
 import {LangaugeContext, Language} from '../Context/LanguageContext';
@@ -38,6 +38,7 @@ const signUpSchema = yup.object().shape({
 });
 
 const SignUp = ({navigation}: any) => {
+  const [securePass, setSecurePass] = useState(true);
   const {theme, toggleTheme} = useContext<Theme>(ThemeContext);
   const {language, changeLanguage} = useContext<Language>(LangaugeContext);
   const color = {
@@ -118,7 +119,7 @@ const SignUp = ({navigation}: any) => {
           {backgroundColor: color.background, height: '100%'},
           styles.mainLoginCtn,
         ]}>
-        <Text style={{fontSize: 30, color: theme?'black':'white'}}>
+        <Text style={{fontSize: 30, color: theme ? 'black' : 'white'}}>
           {translation[language].SignUp}
         </Text>
         <Controller
@@ -143,23 +144,40 @@ const SignUp = ({navigation}: any) => {
           control={control}
           name="password"
           render={({field: {value, onChange}}) => (
-            <TextInput
-              placeholder={translation[language].password}
-              style={[
-                {backgroundColor: color.input, color: color.text},
-                styles.loginInput,
-              ]}
-              value={value}
-              onChangeText={onChange}
-            />
+            <View style={styles.passCtn}>
+              <TextInput
+                placeholder={translation[language].password}
+                style={[
+                  {backgroundColor: color.input, color: color.text},
+                  styles.passwordInput,
+                ]}
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry={securePass}
+              />
+              {securePass? <Pressable onPress={()=>setSecurePass(false)}><Icon
+                name="visibility-off"
+                size={30}
+                color={theme ? 'black' : 'white'}
+                style={styles.eyeIcon}
+              /></Pressable>:<Pressable onPress={()=>setSecurePass(true)}><Icon
+                name="visibility"
+                size={30}
+                color={theme ? 'black' : 'white'}
+                style={styles.eyeIcon}
+              /></Pressable>}
+              
+            </View>
           )}
         />
         {errors.password && (
           <Text style={{color: 'red'}}>{errors.password?.message}</Text>
         )}
         <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-        <Pressable onPress={()=>navigation.navigate('Login')}>
-          <Text style={{color:theme?'blue':'white'}}>Already have an account? Log in here</Text>
+        <Pressable onPress={() => navigation.navigate('Login')}>
+          <Text style={{color: theme ? 'blue' : 'white'}}>
+            Already have an account? Log in here
+          </Text>
         </Pressable>
       </View>
     </View>
@@ -167,7 +185,7 @@ const SignUp = ({navigation}: any) => {
 };
 
 export default SignUp;
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   mainLoginCtn: {
     // backgroundColor:'rgba(8,57,147,0.2)',
     // justifyContent: 'center',
@@ -193,4 +211,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
+  passwordInput: {
+    
+    padding: 10,
+    width: '70%',
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius:10
+  },
+  passCtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    
+  },
+  eyeIcon: {
+    backgroundColor: 'grey',
+    padding: 5,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius:10,
+  }
+
 });

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "clean:android": "cd android && gradlew clean && cd ..",
+    
+    "clean:android": "cd android && gradlew generateCodegenArtifactsFromSchema && cd ..",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
@@ -42,7 +43,7 @@
     "@react-native/babel-preset": "0.78.1",
     "@react-native/eslint-config": "0.78.1",
     "@react-native/metro-config": "0.78.1",
-    "@react-native/typescript-config": "^0.78.2",
+    "@react-native/typescript-config": "^0.79.0",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.0.0",
     "@types/react-native-vector-icons": "^6.4.18",

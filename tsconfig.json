@@ -1,7 +1,22 @@
+// {
+//   "extends": "npm uninstall @react-native/typescript-config",
+//   "compilerOptions": {
+//     "jsx": "react-native", 
+//      "esModuleInterop": true,
+//   }
+
+// }
 {
-  "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-native", 
-     "esModuleInterop": true,
-  }
+    "target": "esnext",
+    "module": "commonjs",
+    "jsx": "react-native",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": ["node_modules"]
 }

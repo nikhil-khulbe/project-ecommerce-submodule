@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import React from 'react'; // Default import
+import React, { useState } from 'react'; // Default import
 import {useContext} from 'react';
 import TabNavigator from '../Navigator/TabNavigator';
 import {Theme, ThemeContext} from '../Context/ThemeContext';
@@ -23,9 +23,11 @@ import {
 } from '@react-native-firebase/auth';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {FormData} from './SignUp';
-import {useTokenAuthStore} from '../Store/TokenAuthStore';
+import { useTokenAuthStore } from '../Store/TokenAuthStore';
 
-const Login = ({navigation}: any) => {
+
+const Login = ({ navigation }: any) => {
+  const [securePass, setSecurePass] = useState(true);
   const {LoggedIn, setLoggedIn} = useTokenAuthStore();
   const {control, handleSubmit} = useForm<FormData>({
     defaultValues: {
@@ -160,19 +162,34 @@ const Login = ({navigation}: any) => {
             )}
           />
 
-          <Controller
+          <Controller  
             control={control}
             name="password"
             render={({field: {value, onChange}}) => (
-              <TextInput
-                placeholder={translation[language].password}
-                style={[
-                  {backgroundColor: color.input, color: color.text},
-                  styles.loginInput,
-                ]}
-                value={value}
-                onChangeText={onChange}
-              />
+              <View style={styles.passCtn}>
+                            <TextInput
+                              placeholder={translation[language].password}
+                              style={[
+                                {backgroundColor: color.input, color: color.text},
+                                styles.passwordInput,
+                              ]}
+                              value={value}
+                              onChangeText={onChange}
+                              secureTextEntry={securePass}
+                            />
+                            {securePass? <Pressable onPress={()=>setSecurePass(false)}><Icon
+                              name="visibility-off"
+                              size={30}
+                              color={theme ? 'black' : 'white'}
+                              style={styles.eyeIcon}
+                            /></Pressable>:<Pressable onPress={()=>setSecurePass(true)}><Icon
+                              name="visibility"
+                              size={30}
+                              color={theme ? 'black' : 'white'}
+                              style={styles.eyeIcon}
+                            /></Pressable>}
+                            
+                          </View>
             )}
           />
 
@@ -213,4 +230,22 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
+  passwordInput: {
+    
+    padding: 10,
+    width: '70%',
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius:10
+  },
+  passCtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    
+  },
+  eyeIcon: {
+    backgroundColor: 'grey',
+    padding: 5,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius:10,
+  }
 });
